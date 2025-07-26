@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gadgets</title>
+
+    <!-- fonts -->
+    <link rel="stylesheet" href="../font.css" />
+
+    <!-- tailwind -->
+    <link rel="stylesheet" href="../output.css" />
+
+    <!-- fontAwesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css"
+    />
+  </head>
+  <body style="background-color: #121212" dir="rtl">
+    <div class="select-none">
+      <h1 class="text-stone-400 m-5 text-[30px]">ابزارک ها</h1>
+
+      <div class="flex justify-between items-start flex-row w-full px-4">
+        <div
+          class="border-[1px] border-amber-300 text-gray-400 w-[48%] rounded-md cursor-pointer shadow-sm shadow-amber-300"
+        >
+          <div class="flex flex-row justify-between items-center p-3 shortcatTitle">
+            <p class="title">
+              <i class="fa-solid fa-bolt"></i>
+              شورت کات ها
+            </p>
+            <i class="fa fa-arrow-down text-gray-200"></i>
+          </div>
+          <div class="overflow-hidden shortcatBox border-t-[1px] mt-0.5 h-[1px] transition-all">
+            <div class="flex flex-row-reverse justify-between items-center px-2 pt-2">
+                <p>control+f</p>
+                <p>../../apps/chrome.exe</p>
+                <i class="fa fa-close "></i>
+            </div>
+
+
+            <p class="text-[50px]">+</p>
+          </div>
+        </div>
+        <div
+          class="border-[1px] border-amber-300 text-gray-400 w-[48%] p-3 rounded-md cursor-pointer shadow-sm shadow-amber-300"
+        >
+          <div class="flex flex-row justify-between items-center">
+            <p class="title">
+              <i class="fa-solid fa-crown"></i>
+              محبوب ترین ها
+            </p>
+            <i class="fa fa-arrow-down text-gray-200"></i>
+          </div>
+          <div class="body"></div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- render -->
+    <script src="../render/mainRender.js"></script>
+</body>
+</html>
