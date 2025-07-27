@@ -3,8 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const electron_1 = require("electron");
 const path_1 = __importDefault(require("path"));
+const electron_1 = require("electron");
 console.log("start");
 const dirname = path_1.default.join(__dirname, "..", "src");
 const createWindow = () => {
@@ -13,9 +13,15 @@ const createWindow = () => {
         height: 300 * 1.5,
         show: false,
         resizable: false,
+        webPreferences: {
+            preload: path_1.default.join(__dirname, "preload", "preload.js"),
+            nodeIntegration: true,
+            contextIsolation: true,
+        }
     });
     mainWindow.loadFile(path_1.default.join(dirname, "ui", "index.html")); // load index
     mainWindow.setMenu(null); // deleted menu
+    mainWindow.webContents.openDevTools(); // inspect
     mainWindow.on("ready-to-show", () => {
         mainWindow.show();
         electron_1.globalShortcut.register("control+F", () => {
@@ -23,6 +29,7 @@ const createWindow = () => {
         });
     });
 };
+// ipc
 electron_1.app.on("ready", () => {
     createWindow();
 });

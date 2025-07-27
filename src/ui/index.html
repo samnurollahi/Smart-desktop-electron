@@ -25,22 +25,29 @@
         <div
           class="border-[1px] border-amber-300 text-gray-400 w-[48%] rounded-md cursor-pointer shadow-sm shadow-amber-300"
         >
-          <div class="flex flex-row justify-between items-center p-3 shortcatTitle">
+          <div
+            class="flex flex-row justify-between items-center p-3 shortcatTitle"
+          >
             <p class="title">
               <i class="fa-solid fa-bolt"></i>
               شورت کات ها
             </p>
             <i class="fa fa-arrow-down text-gray-200"></i>
           </div>
-          <div class="overflow-hidden shortcatBox border-t-[1px] mt-0.5 h-[1px] transition-all">
-            <div class="flex flex-row-reverse justify-between items-center px-2 pt-2">
-                <p>control+f</p>
-                <p>../../apps/chrome.exe</p>
-                <i class="fa fa-close "></i>
+          <div
+            class="overflow-hidden shortcatBox border-t-[1px] mt-0.5 h-[1px] transition-all relative"
+          >
+            <div
+              class="flex flex-row-reverse justify-between items-center px-2 pt-2"
+            >
+              <div class="flex items-center">
+                <p class="text-white">control+f</p>
+                <i class="fa fa-close text-red-700 mr-2 border border-red-700 text-center rounded-md active:bg-red-700 active:text-white"></i>
+              </div>
+              <p class="text-blue-300">chrome.exe</p>
             </div>
 
-
-            <p class="text-[50px]">+</p>
+            <i class="fa fa-add absolute text-[20px] bottom-[15px] left-[50%] text-center z-50 transition-all text-blue-500 active:text-blue-100"></i>
           </div>
         </div>
         <div
@@ -58,8 +65,7 @@
       </div>
     </div>
 
-
     <!-- render -->
     <script src="../render/mainRender.js"></script>
-</body>
+  </body>
 </html>

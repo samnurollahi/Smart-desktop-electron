@@ -1,5 +1,6 @@
-import { app, BrowserWindow, globalShortcut, shell } from "electron";
 import path from "path";
+
+import { app, BrowserWindow, globalShortcut, shell } from "electron";
 
 console.log("start");
 
@@ -11,10 +12,15 @@ const createWindow = () => {
     height: 300 * 1.5,
     show: false,
     resizable: false,
+    webPreferences: {
+      preload: path.join(__dirname, "preload", "preload.js"),
+      nodeIntegration: true,
+      contextIsolation: true,
+    }
   });
   mainWindow.loadFile(path.join(dirname, "ui", "index.html")); // load index
   mainWindow.setMenu(null) // deleted menu
-
+  mainWindow.webContents.openDevTools() // inspect
 
   mainWindow.on("ready-to-show", () => {
     mainWindow.show();
@@ -25,7 +31,12 @@ const createWindow = () => {
   });
 };
 
+
+
+// ipc
+
+
+
 app.on("ready", () => {
   createWindow();
 });
-
