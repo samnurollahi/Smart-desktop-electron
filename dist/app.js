@@ -14,8 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = __importDefault(require("path"));
 const electron_1 = require("electron");
-console.log("start");
 const dirname = path_1.default.join(__dirname, "..", "src");
+const isClose = false;
 const createWindow = () => {
     const mainWindow = new electron_1.BrowserWindow({
         width: 450 * 1.5,
@@ -33,8 +33,26 @@ const createWindow = () => {
     mainWindow.webContents.openDevTools(); // inspect
     mainWindow.on("ready-to-show", () => {
         mainWindow.show();
+        mainWindow.on("close", (e) => {
+            if (!isClose) {
+                e.preventDefault();
+                mainWindow.hide();
+            }
+        });
     });
     // ipc
+    electron_1.ipcMain.on("data", (e, data) => {
+        for (let shortCut of data) {
+            try {
+                electron_1.globalShortcut.register(`${shortCut.keys}+${shortCut.keyB}`, () => {
+                    electron_1.shell.openPath(shortCut.filePath);
+                });
+            }
+            catch (err) {
+                console.log(err);
+            }
+        }
+    });
     electron_1.ipcMain.on("addShortCutDialog", (e) => __awaiter(void 0, void 0, void 0, function* () {
         const result = yield electron_1.dialog.showOpenDialog(mainWindow, {
             // select app
@@ -52,10 +70,8 @@ const createWindow = () => {
         }
     }));
     electron_1.ipcMain.on("setKey", (e, data) => {
-        console.log(data);
         electron_1.globalShortcut.register(`${data.keys}+${data.keyB.toLocaleUpperCase()}`, () => {
             electron_1.shell.openPath(data.filePath);
-            console.log(data.filePath);
         });
     });
 };

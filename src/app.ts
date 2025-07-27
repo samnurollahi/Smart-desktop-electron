@@ -12,6 +12,7 @@ import {
 
 
 const dirname = path.join(__dirname, "..", "src");
+const isClose = false
 
 const createWindow = () => {
   const mainWindow = new BrowserWindow({
@@ -31,9 +32,28 @@ const createWindow = () => {
 
   mainWindow.on("ready-to-show", () => {
     mainWindow.show();
+
+
+    mainWindow.on("close", (e) => {
+      if(!isClose) {
+        e.preventDefault()
+        mainWindow.hide()
+      } 
+    })
   });
 
   // ipc
+  ipcMain.on("data", (e, data) => {
+    for(let shortCut of data) {
+      try {
+        globalShortcut.register(`${shortCut.keys}+${shortCut.keyB}`, () => {
+          shell.openPath(shortCut.filePath)
+        })
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  })
   ipcMain.on("addShortCutDialog", async (e) => {
     const result: any = await dialog.showOpenDialog(mainWindow, {
       // select app
@@ -51,10 +71,8 @@ const createWindow = () => {
     }
   });
   ipcMain.on("setKey", (e, data) => {
-    console.log(data);
     globalShortcut.register(`${data.keys}+${data.keyB.toLocaleUpperCase()}`, () => {
       shell.openPath(data.filePath)
-      console.log(data.filePath);
     })
   })  
 };
