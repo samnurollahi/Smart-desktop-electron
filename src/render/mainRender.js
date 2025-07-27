@@ -14,9 +14,9 @@ shortcatTitle.addEventListener("click", () => {
 })
 
 
-window.addEventListener("keyup", (e) => {
-    window.addEventListener("keyup", (ev) => {
-        console.log(e.key + "+" + ev.key);
-    })
-})
-window.removeEventListener
+// window.addEventListener("keyup", (e) => {
+//     window.addEventListener("keyup", (ev) => {
+//         console.log(e.key + "+" + ev.key);
+//     })
+// })
+// window.removeEventListener

@@ -17,8 +17,8 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css"
     />
   </head>
-  <body style="background-color: #121212" dir="rtl">
-    <div class="select-none">
+  <body style="background-color: #121212" class="select-none" dir="rtl">
+    <div class="" id="container">
       <h1 class="text-stone-400 m-5 text-[30px]">ابزارک ها</h1>
 
       <div class="flex justify-between items-start flex-row w-full px-4">
@@ -47,7 +47,7 @@
               <p class="text-blue-300">chrome.exe</p>
             </div>
 
-            <i class="fa fa-add absolute text-[20px] bottom-[15px] left-[50%] text-center z-50 transition-all text-blue-500 active:text-blue-100"></i>
+            <i class="fa fa-add absolute text-[20px] bottom-[15px] left-[50%] text-center z-50 transition-all text-blue-500 active:text-blue-100" id="addShortCut"></i>
           </div>
         </div>
         <div
@@ -63,6 +63,11 @@
           <div class="body"></div>
         </div>
       </div>
+
+
+    </div>
+    <div class="absolute top-[50%] left-[40%] hidden" id="modalShortCut"> 
+      <p class="text-center text-white">شرت کات رو مشخص کن</p>
     </div>
 
     <!-- render -->
