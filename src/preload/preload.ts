@@ -1,6 +1,7 @@
 import { ipcRenderer } from "electron";
 
 window.addEventListener("DOMContentLoaded", () => {
+  // localStorage.clear()
   const keySeted = JSON.parse(localStorage.getItem("keys") || "[]");
   ipcRenderer.send("data", keySeted);
 

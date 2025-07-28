@@ -6,7 +6,9 @@ import {
   dialog,
   globalShortcut,
   ipcMain,
+  nativeImage,
   shell,
+  Tray,
 } from "electron";
 
 
@@ -30,9 +32,11 @@ const createWindow = () => {
   mainWindow.setMenu(null); // deleted menu
   mainWindow.webContents.openDevTools(); // inspect
 
+  const tray = new Tray(nativeImage.createFromPath(path.join(__dirname, "..", "assets", "images", "logo.png")))
+  tray.setToolTip("Gadgets")
+
   mainWindow.on("ready-to-show", () => {
     mainWindow.show();
-
 
     mainWindow.on("close", (e) => {
       if(!isClose) {
@@ -79,4 +83,9 @@ const createWindow = () => {
 
 app.on("ready", () => {
   createWindow();
+
+  app.setLoginItemSettings({
+    openAtLogin: true,
+    path: app.getPath('exe')
+  });
 });

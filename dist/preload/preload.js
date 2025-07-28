@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 window.addEventListener("DOMContentLoaded", () => {
+    // localStorage.clear()
     const keySeted = JSON.parse(localStorage.getItem("keys") || "[]");
     electron_1.ipcRenderer.send("data", keySeted);
     const addShortCut = document.getElementById("addShortCut"), // btn add

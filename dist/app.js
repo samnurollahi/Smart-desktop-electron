@@ -31,6 +31,8 @@ const createWindow = () => {
     mainWindow.loadFile(path_1.default.join(dirname, "ui", "index.html")); // load index
     mainWindow.setMenu(null); // deleted menu
     mainWindow.webContents.openDevTools(); // inspect
+    const tray = new electron_1.Tray(electron_1.nativeImage.createFromPath(path_1.default.join(__dirname, "..", "assets", "images", "logo.png")));
+    tray.setToolTip("Gadgets");
     mainWindow.on("ready-to-show", () => {
         mainWindow.show();
         mainWindow.on("close", (e) => {
@@ -77,4 +79,8 @@ const createWindow = () => {
 };
 electron_1.app.on("ready", () => {
     createWindow();
+    electron_1.app.setLoginItemSettings({
+        openAtLogin: true,
+        path: electron_1.app.getPath('exe')
+    });
 });
