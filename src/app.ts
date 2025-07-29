@@ -1,4 +1,5 @@
 import path from "path";
+import fs from "fs";
 
 import {
   app,
@@ -10,12 +11,27 @@ import {
   shell,
   Tray,
 } from "electron";
-
-
+import { DataBase } from "./file";
 
 const dirname = path.join(__dirname, "..", "src");
-const isClose = false
+const isClose = false;
 
+const keySets = () => {
+  DataBase.gets((err, data) => {
+    if (err) console.log(err);
+    else if (data) {
+      for (let shortCut of data) {
+        try {
+          globalShortcut.register(`${shortCut.keys}+${shortCut.keyB}`, () => {
+            shell.openPath(shortCut.filePath);
+          });
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    }
+  });
+};
 const createWindow = () => {
   const mainWindow = new BrowserWindow({
     width: 450 * 1.5,
@@ -32,32 +48,42 @@ const createWindow = () => {
   mainWindow.setMenu(null); // deleted menu
   mainWindow.webContents.openDevTools(); // inspect
 
-  const tray = new Tray(nativeImage.createFromPath(path.join(__dirname, "..", "assets", "images", "logo.png")))
-  tray.setToolTip("Gadgets")
+  const tray = new Tray(
+    nativeImage.createFromPath(
+      path.join(__dirname, "..", "assets", "images", "logo.png")
+    )
+  );
+  tray.setToolTip("Gadgets");
+  tray.on("click", (e) => {
+    if (e.shiftKey) {
+      tray.destroy();
+      app.quit();
+    } else {
+      mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
+    }
+  });
 
   mainWindow.on("ready-to-show", () => {
     mainWindow.show();
 
     mainWindow.on("close", (e) => {
-      if(!isClose) {
-        e.preventDefault()
-        mainWindow.hide()
-      } 
-    })
+      if (!isClose) {
+        e.preventDefault();
+        mainWindow.hide();
+      }
+    });
   });
 
   // ipc
-  ipcMain.on("data", (e, data) => {
-    for(let shortCut of data) {
-      try {
-        globalShortcut.register(`${shortCut.keys}+${shortCut.keyB}`, () => {
-          shell.openPath(shortCut.filePath)
-        })
-      } catch (err) {
-        console.log(err);
+  ipcMain.on("needData", (e) => {
+    DataBase.gets((err, data) => {
+      if (err) console.log(err);
+      else {
+        console.log(data);
+        e.sender.send("data", data);
       }
-    }
-  })
+    });
+  });
   ipcMain.on("addShortCutDialog", async (e) => {
     const result: any = await dialog.showOpenDialog(mainWindow, {
       // select app
@@ -75,17 +101,59 @@ const createWindow = () => {
     }
   });
   ipcMain.on("setKey", (e, data) => {
-    globalShortcut.register(`${data.keys}+${data.keyB.toLocaleUpperCase()}`, () => {
-      shell.openPath(data.filePath)
-    })
-  })  
+    DataBase.set(data, (err) => {
+      if (err) console.log(err);
+      else {
+        DataBase.gets((err, dd) => {
+          if (err) console.log(err);
+          else {
+            console.log(data);
+            e.sender.send("change", dd);
+          }
+        });
+      }
+    });
+
+    globalShortcut.register(
+      `${data.keys}+${data.keyB.toLocaleUpperCase()}`,
+      () => {
+        shell.openPath(data.filePath);
+      }
+    );
+  });
+  ipcMain.on(
+    "removeShortCut",
+    (
+      e,
+      data: {
+        keys: string;
+        keyB: string;
+      }
+    ) => {
+      DataBase.remove(data.keys, data.keyB, (err) => {
+        if (err) console.log(err);
+        else {
+          e.sender.send("removed", null);
+          keySets();
+          DataBase.gets((err, dd) => {
+            if (err) console.log(err);
+            else {
+              console.log(data);
+              e.sender.send("change", dd);
+            }
+          });
+        }
+      });
+    }
+  );
 };
 
 app.on("ready", () => {
   createWindow();
+  keySets();
 
   app.setLoginItemSettings({
     openAtLogin: true,
-    path: app.getPath('exe')
+    path: app.getPath("exe"),
   });
 });

@@ -14,8 +14,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = __importDefault(require("path"));
 const electron_1 = require("electron");
+const file_1 = require("./file");
 const dirname = path_1.default.join(__dirname, "..", "src");
 const isClose = false;
+const keySets = () => {
+    file_1.DataBase.gets((err, data) => {
+        if (err)
+            console.log(err);
+        else if (data) {
+            for (let shortCut of data) {
+                try {
+                    electron_1.globalShortcut.register(`${shortCut.keys}+${shortCut.keyB}`, () => {
+                        electron_1.shell.openPath(shortCut.filePath);
+                    });
+                }
+                catch (err) {
+                    console.log(err);
+                }
+            }
+        }
+    });
+};
 const createWindow = () => {
     const mainWindow = new electron_1.BrowserWindow({
         width: 450 * 1.5,
@@ -33,6 +52,15 @@ const createWindow = () => {
     mainWindow.webContents.openDevTools(); // inspect
     const tray = new electron_1.Tray(electron_1.nativeImage.createFromPath(path_1.default.join(__dirname, "..", "assets", "images", "logo.png")));
     tray.setToolTip("Gadgets");
+    tray.on("click", (e) => {
+        if (e.shiftKey) {
+            tray.destroy();
+            electron_1.app.quit();
+        }
+        else {
+            mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
+        }
+    });
     mainWindow.on("ready-to-show", () => {
         mainWindow.show();
         mainWindow.on("close", (e) => {
@@ -43,17 +71,15 @@ const createWindow = () => {
         });
     });
     // ipc
-    electron_1.ipcMain.on("data", (e, data) => {
-        for (let shortCut of data) {
-            try {
-                electron_1.globalShortcut.register(`${shortCut.keys}+${shortCut.keyB}`, () => {
-                    electron_1.shell.openPath(shortCut.filePath);
-                });
-            }
-            catch (err) {
+    electron_1.ipcMain.on("needData", (e) => {
+        file_1.DataBase.gets((err, data) => {
+            if (err)
                 console.log(err);
+            else {
+                console.log(data);
+                e.sender.send("data", data);
             }
-        }
+        });
     });
     electron_1.ipcMain.on("addShortCutDialog", (e) => __awaiter(void 0, void 0, void 0, function* () {
         const result = yield electron_1.dialog.showOpenDialog(mainWindow, {
@@ -72,15 +98,48 @@ const createWindow = () => {
         }
     }));
     electron_1.ipcMain.on("setKey", (e, data) => {
+        file_1.DataBase.set(data, (err) => {
+            if (err)
+                console.log(err);
+            else {
+                file_1.DataBase.gets((err, dd) => {
+                    if (err)
+                        console.log(err);
+                    else {
+                        console.log(data);
+                        e.sender.send("change", dd);
+                    }
+                });
+            }
+        });
         electron_1.globalShortcut.register(`${data.keys}+${data.keyB.toLocaleUpperCase()}`, () => {
             electron_1.shell.openPath(data.filePath);
+        });
+    });
+    electron_1.ipcMain.on("removeShortCut", (e, data) => {
+        file_1.DataBase.remove(data.keys, data.keyB, (err) => {
+            if (err)
+                console.log(err);
+            else {
+                e.sender.send("removed", null);
+                keySets();
+                file_1.DataBase.gets((err, dd) => {
+                    if (err)
+                        console.log(err);
+                    else {
+                        console.log(data);
+                        e.sender.send("change", dd);
+                    }
+                });
+            }
         });
     });
 };
 electron_1.app.on("ready", () => {
     createWindow();
+    keySets();
     electron_1.app.setLoginItemSettings({
         openAtLogin: true,
-        path: electron_1.app.getPath('exe')
+        path: electron_1.app.getPath("exe"),
     });
 });
